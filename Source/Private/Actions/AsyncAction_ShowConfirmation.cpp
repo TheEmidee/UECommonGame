@@ -1,19 +1,18 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "Actions/AsyncAction_ShowConfirmation.h"
 
-#include "Engine/GameInstance.h"
 #include "Messaging/CommonGameDialog.h"
 #include "Messaging/CommonMessagingSubsystem.h"
 
-UAsyncAction_ShowConfirmation::UAsyncAction_ShowConfirmation( const FObjectInitializer & ObjectInitializer ) :
-    Super( ObjectInitializer )
+#include <Engine/GameInstance.h>
+
+UAsyncAction_ShowConfirmation::UAsyncAction_ShowConfirmation( const FObjectInitializer & object_initializer ) :
+    Super( object_initializer )
 {
 }
 
-UAsyncAction_ShowConfirmation * UAsyncAction_ShowConfirmation::ShowConfirmationYesNo( UObject * InWorldContextObject, FText Title, FText Message )
+UAsyncAction_ShowConfirmation * UAsyncAction_ShowConfirmation::ShowConfirmationYesNo( UObject * in_world_context_object, FText title, FText message )
 {
-    return CreateAction( InWorldContextObject, UCommonGameDialogDescriptor::CreateConfirmationYesNo( Title, Message ) );
+    return CreateAction( in_world_context_object, UCommonGameDialogDescriptor::CreateConfirmationYesNo( title, message ) );
 }
 
 UAsyncAction_ShowConfirmation * UAsyncAction_ShowConfirmation::ShowConfirmationWithCustomWidgetYesNo( UObject * in_world_context_object, FText title, FText message, TSubclassOf< UCommonGameDialog > custom_dialog_widget )
@@ -21,9 +20,9 @@ UAsyncAction_ShowConfirmation * UAsyncAction_ShowConfirmation::ShowConfirmationW
     return CreateAction( in_world_context_object, UCommonGameDialogDescriptor::CreateConfirmationYesNo( title, message ), custom_dialog_widget );
 }
 
-UAsyncAction_ShowConfirmation * UAsyncAction_ShowConfirmation::ShowConfirmationOkCancel( UObject * InWorldContextObject, FText Title, FText Message )
+UAsyncAction_ShowConfirmation * UAsyncAction_ShowConfirmation::ShowConfirmationOkCancel( UObject * in_world_context_object, FText title, FText message )
 {
-    return CreateAction( InWorldContextObject, UCommonGameDialogDescriptor::CreateConfirmationOkCancel( Title, Message ) );
+    return CreateAction( in_world_context_object, UCommonGameDialogDescriptor::CreateConfirmationOkCancel( title, message ) );
 }
 
 UAsyncAction_ShowConfirmation * UAsyncAction_ShowConfirmation::ShowConfirmationWithCustomWidgetOkCancel( UObject * in_world_context_object, FText title, FText message, TSubclassOf< UCommonGameDialog > custom_dialog_widget )
@@ -31,9 +30,9 @@ UAsyncAction_ShowConfirmation * UAsyncAction_ShowConfirmation::ShowConfirmationW
     return CreateAction( in_world_context_object, UCommonGameDialogDescriptor::CreateConfirmationOkCancel( title, message ), custom_dialog_widget );
 }
 
-UAsyncAction_ShowConfirmation * UAsyncAction_ShowConfirmation::ShowConfirmationCustom( UObject * InWorldContextObject, UCommonGameDialogDescriptor * Descriptor )
+UAsyncAction_ShowConfirmation * UAsyncAction_ShowConfirmation::ShowConfirmationCustom( UObject * in_world_context_object, UCommonGameDialogDescriptor * descriptor )
 {
-    return CreateAction( InWorldContextObject, Descriptor );
+    return CreateAction( in_world_context_object, descriptor );
 }
 
 UAsyncAction_ShowConfirmation * UAsyncAction_ShowConfirmation::ShowConfirmationWithCustomWidgetCustom( UObject * in_world_context_object, UCommonGameDialogDescriptor * descriptor, TSubclassOf< UCommonGameDialog > custom_dialog_widget )
@@ -45,30 +44,30 @@ void UAsyncAction_ShowConfirmation::Activate()
 {
     if ( WorldContextObject && !TargetLocalPlayer )
     {
-        if ( UUserWidget * UserWidget = Cast< UUserWidget >( WorldContextObject ) )
+        if ( UUserWidget * user_widget = Cast< UUserWidget >( WorldContextObject ) )
         {
-            TargetLocalPlayer = UserWidget->GetOwningLocalPlayer< ULocalPlayer >();
+            TargetLocalPlayer = user_widget->GetOwningLocalPlayer< ULocalPlayer >();
         }
-        else if ( APlayerController * PC = Cast< APlayerController >( WorldContextObject ) )
+        else if ( APlayerController * player_controller = Cast< APlayerController >( WorldContextObject ) )
         {
-            TargetLocalPlayer = PC->GetLocalPlayer();
+            TargetLocalPlayer = player_controller->GetLocalPlayer();
         }
-        else if ( UWorld * World = WorldContextObject->GetWorld() )
+        else if ( UWorld * world = WorldContextObject->GetWorld() )
         {
-            if ( UGameInstance * GameInstance = World->GetGameInstance< UGameInstance >() )
+            if ( UGameInstance * game_instance = world->GetGameInstance< UGameInstance >() )
             {
-                TargetLocalPlayer = GameInstance->GetPrimaryPlayerController( false )->GetLocalPlayer();
+                TargetLocalPlayer = game_instance->GetPrimaryPlayerController( false )->GetLocalPlayer();
             }
         }
     }
 
     if ( TargetLocalPlayer )
     {
-        if ( UCommonMessagingSubsystem * Messaging = TargetLocalPlayer->GetSubsystem< UCommonMessagingSubsystem >() )
+        if ( auto * messaging = TargetLocalPlayer->GetSubsystem< UCommonMessagingSubsystem >() )
         {
-            FCommonMessagingResultDelegate ResultCallback = FCommonMessagingResultDelegate::CreateUObject( this, &UAsyncAction_ShowConfirmation::HandleConfirmationResult );
+            auto result_callback = FCommonMessagingResultDelegate::CreateUObject( this, &UAsyncAction_ShowConfirmation::HandleConfirmationResult );
 
-            Messaging->ShowConfirmation( Descriptor, CustomDialogWidget, ResultCallback );
+            messaging->ShowConfirmation( Descriptor, CustomDialogWidget, result_callback );
 
             return;
         }
@@ -78,16 +77,16 @@ void UAsyncAction_ShowConfirmation::Activate()
     HandleConfirmationResult( ECommonMessagingResult::Unknown );
 }
 
-void UAsyncAction_ShowConfirmation::HandleConfirmationResult( ECommonMessagingResult ConfirmationResult )
+void UAsyncAction_ShowConfirmation::HandleConfirmationResult( ECommonMessagingResult confirmation_result )
 {
-    OnResult.Broadcast( ConfirmationResult );
+    OnResult.Broadcast( confirmation_result );
 
     SetReadyToDestroy();
 }
 
 UAsyncAction_ShowConfirmation * UAsyncAction_ShowConfirmation::CreateAction( UObject * in_world_context, UCommonGameDialogDescriptor * descriptor, TSubclassOf< UCommonGameDialog > custom_dialog_widget )
 {
-    UAsyncAction_ShowConfirmation * action = NewObject< UAsyncAction_ShowConfirmation >();
+    auto * action = NewObject< UAsyncAction_ShowConfirmation >();
     action->WorldContextObject = in_world_context;
     action->Descriptor = descriptor;
     action->CustomDialogWidget = custom_dialog_widget;

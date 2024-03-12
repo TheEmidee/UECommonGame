@@ -1,9 +1,7 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
-#include "Kismet/BlueprintAsyncActionBase.h"
-#include "UObject/ObjectPtr.h"
+#include <Kismet/BlueprintAsyncActionBase.h>
+#include <UObject/ObjectPtr.h>
 
 #include "AsyncAction_ShowConfirmation.generated.h"
 
@@ -26,22 +24,22 @@ class COMMONGAME_API UAsyncAction_ShowConfirmation : public UBlueprintAsyncActio
     GENERATED_UCLASS_BODY()
 
 public:
-    UFUNCTION( BlueprintCallable, BlueprintCosmetic, meta = ( BlueprintInternalUseOnly = "true", WorldContext = "InWorldContextObject" ) )
+    UFUNCTION( BlueprintCallable, BlueprintCosmetic, meta = ( BlueprintInternalUseOnly = "true", WorldContext = "in_world_context_object" ) )
     static UAsyncAction_ShowConfirmation * ShowConfirmationYesNo(
-        UObject * InWorldContextObject,
-        FText Title,
-        FText Message );
+        UObject * in_world_context_object,
+        FText title,
+        FText message );
 
-    UFUNCTION( BlueprintCallable, BlueprintCosmetic, meta = ( BlueprintInternalUseOnly = "true", WorldContext = "InWorldContextObject" ) )
+    UFUNCTION( BlueprintCallable, BlueprintCosmetic, meta = ( BlueprintInternalUseOnly = "true", WorldContext = "in_world_context_object" ) )
     static UAsyncAction_ShowConfirmation * ShowConfirmationOkCancel(
-        UObject * InWorldContextObject,
-        FText Title,
-        FText Message );
+        UObject * in_world_context_object,
+        FText title,
+        FText message );
 
-    UFUNCTION( BlueprintCallable, BlueprintCosmetic, meta = ( BlueprintInternalUseOnly = "true", WorldContext = "InWorldContextObject" ) )
+    UFUNCTION( BlueprintCallable, BlueprintCosmetic, meta = ( BlueprintInternalUseOnly = "true", WorldContext = "in_world_context_object" ) )
     static UAsyncAction_ShowConfirmation * ShowConfirmationCustom(
-        UObject * InWorldContextObject,
-        UCommonGameDialogDescriptor * Descriptor );
+        UObject * in_world_context_object,
+        UCommonGameDialogDescriptor * descriptor );
 
     UFUNCTION( BlueprintCallable, BlueprintCosmetic, meta = ( BlueprintInternalUseOnly = "true", WorldContext = "in_world_context_object" ) )
     static UAsyncAction_ShowConfirmation * ShowConfirmationWithCustomWidgetYesNo(
@@ -70,7 +68,7 @@ public:
     FCommonMessagingResultMCDelegate OnResult;
 
 private:
-    void HandleConfirmationResult( ECommonMessagingResult ConfirmationResult );
+    void HandleConfirmationResult( ECommonMessagingResult confirmation_result );
     static UAsyncAction_ShowConfirmation * CreateAction( UObject * in_world_context, UCommonGameDialogDescriptor * descriptor, TSubclassOf< UCommonGameDialog > custom_dialog_widget = nullptr );
 
     UPROPERTY( Transient )
