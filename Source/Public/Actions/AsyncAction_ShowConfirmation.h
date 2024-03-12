@@ -10,8 +10,9 @@
 enum class ECommonMessagingResult : uint8;
 
 class FText;
-class UCommonGameDialogDescriptor;
 class ULocalPlayer;
+class UCommonGameDialog;
+class UCommonGameDialogDescriptor;
 struct FFrame;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FCommonMessagingResultMCDelegate, ECommonMessagingResult, Result );
@@ -70,6 +71,7 @@ public:
 
 private:
     void HandleConfirmationResult( ECommonMessagingResult ConfirmationResult );
+    static UAsyncAction_ShowConfirmation * CreateAction( UObject * in_world_context, UCommonGameDialogDescriptor * descriptor, TSubclassOf< UCommonGameDialog > custom_dialog_widget = nullptr );
 
     UPROPERTY( Transient )
     TObjectPtr< UObject > WorldContextObject;

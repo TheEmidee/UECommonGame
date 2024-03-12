@@ -1,13 +1,12 @@
 #include "Messaging/CommonMessagingSubsystem.h"
 
-#include "Messaging/CommonGameDialog.h"
-
 #include <Engine/GameInstance.h>
 #include <Engine/LocalPlayer.h>
 #include <UObject/UObjectHash.h>
 
 class FSubsystemCollectionBase;
 class UClass;
+class UCommonGameDialog;
 
 void UCommonMessagingSubsystem::Initialize( FSubsystemCollectionBase & Collection )
 {
