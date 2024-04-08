@@ -169,3 +169,25 @@ void UCommonUIExtensions::ResumeInputForPlayer(ULocalPlayer* LocalPlayer, FName 
 	}
 }
 
+void UCommonUIExtensions::ClearWidgetsFromLayer( ULocalPlayer * LocalPlayer, FGameplayTag LayerName )
+{
+    if ( !ensure( LocalPlayer ) )
+    {
+        return;
+    }
+
+    if (UGameUIManagerSubsystem * UIManager = LocalPlayer->GetGameInstance()->GetSubsystem<UGameUIManagerSubsystem>())
+    {
+        if (const UGameUIPolicy * Policy = UIManager->GetCurrentUIPolicy())
+        {
+            if ( UPrimaryGameLayout * RootLayout = Policy->GetRootLayout(CastChecked<UCommonLocalPlayer>(LocalPlayer)))
+            {
+				if (UCommonActivatableWidgetContainerBase * LayerWidget = RootLayout->GetLayerWidget( LayerName ))
+				{
+                    LayerWidget->ClearWidgets();
+				}
+            }
+        }
+    }
+}
+
