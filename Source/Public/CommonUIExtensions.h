@@ -57,6 +57,9 @@ public:
 
 	static void ResumeInputForPlayer(ULocalPlayer* LocalPlayer, FName SuspendToken);
 
+	UFUNCTION( BlueprintCallable, BlueprintCosmetic, Category = "Global UI Extensions" )
+    static void ClearWidgetsFromLayer( ULocalPlayer * LocalPlayer, UPARAM( meta = ( Categories = "UI.Layer" ) ) FGameplayTag LayerName );
+
 private:
 	static int32 InputSuspensions;
 };
