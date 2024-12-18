@@ -18,6 +18,11 @@ UAsyncAction_ShowConfirmation* UAsyncAction_ShowConfirmation::ShowConfirmationYe
 	return CreateAction(InWorldContextObject, UCommonGameDialogDescriptor::CreateConfirmationYesNo(Title, Message));
 }
 
+UAsyncAction_ShowConfirmation* UAsyncAction_ShowConfirmation::ShowConfirmationOnScreenYesNo(UObject * InWorldContextObject, FText Title, FText Message, TSubclassOf< UCommonGameDialog > DialogueWidget, int ZOrder)
+{
+    return CreateAction( InWorldContextObject, UCommonGameDialogDescriptor::CreateConfirmationYesNo(Title, Message ),nullptr, DialogueWidget, ZOrder);
+}
+
 UAsyncAction_ShowConfirmation* UAsyncAction_ShowConfirmation::ShowConfirmationOkCancel(UObject* InWorldContextObject, FText Title, FText Message)
 {
 	return CreateAction(InWorldContextObject, UCommonGameDialogDescriptor::CreateConfirmationOkCancel(Title, Message));
@@ -69,9 +74,21 @@ void UAsyncAction_ShowConfirmation::Activate()
 		if (UCommonMessagingSubsystem* Messaging = TargetLocalPlayer->GetSubsystem<UCommonMessagingSubsystem>())
 		{
 			FCommonMessagingResultDelegate ResultCallback = FCommonMessagingResultDelegate::CreateUObject(this, &UAsyncAction_ShowConfirmation::HandleConfirmationResult);
-			Messaging->ShowConfirmation(Descriptor, CustomDialogWidget, ResultCallback);
-			return;
-		}
+	            
+	            if (ZOrder == INDEX_NONE)
+	            {
+	                Messaging->ShowConfirmation(Descriptor, CustomDialogWidget, ResultCallback);
+	            }
+                else
+                {
+                    DialogWidgetOnScreen = CreateWidget< UCommonGameDialog >(TargetLocalPlayer->PlayerController, DialogWidgetOnScreenClass);
+                    DialogWidgetOnScreen->SetupDialog(Descriptor, ResultCallback);
+                    DialogWidgetOnScreen->AddToViewport(ZOrder);
+                    DialogWidgetOnScreen->ActivateWidget();
+	            }
+	            
+	            return;
+	        }
 	}
 	
 	// If we couldn't make the confirmation, just handle an unknown result and broadcast nothing
@@ -82,15 +99,22 @@ void UAsyncAction_ShowConfirmation::HandleConfirmationResult(ECommonMessagingRes
 {
 	OnResult.Broadcast(ConfirmationResult);
 
+    if (DialogWidgetOnScreen && ConfirmationResult != ECommonMessagingResult::Confirmed)
+    {
+        DialogWidgetOnScreen->RemoveFromParent();
+    }
+    
 	SetReadyToDestroy();
 }
 
-UAsyncAction_ShowConfirmation* UAsyncAction_ShowConfirmation::CreateAction(UObject* InWorldContext, UCommonGameDialogDescriptor* Descriptor, TSubclassOf<UCommonGameDialog> CustomDialogWidget)
+UAsyncAction_ShowConfirmation* UAsyncAction_ShowConfirmation::CreateAction(UObject* InWorldContext, UCommonGameDialogDescriptor* Descriptor, TSubclassOf<UCommonGameDialog> CustomDialogWidget, TSubclassOf< UCommonGameDialog > DialogWidgetOnScreen, int ZOrder)
 {
 	auto* action = NewObject< UAsyncAction_ShowConfirmation >();
 	action->WorldContextObject = InWorldContext;
 	action->Descriptor = Descriptor;
 	action->CustomDialogWidget = CustomDialogWidget;
+    action->DialogWidgetOnScreenClass = DialogWidgetOnScreen;
+    action->ZOrder = ZOrder;
 
 	action->RegisterWithGameInstance(InWorldContext);
 

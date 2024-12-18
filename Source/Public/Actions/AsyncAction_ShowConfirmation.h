@@ -31,6 +31,11 @@ public:
 		UObject* InWorldContextObject, FText Title, FText Message
 	);
 
+    UFUNCTION(BlueprintCallable, BlueprintCosmetic, meta = (BlueprintInternalUseOnly = "true", WorldContext = "InWorldContextObject"))
+    static UAsyncAction_ShowConfirmation* ShowConfirmationOnScreenYesNo(
+        UObject* InWorldContextObject, FText Title, FText Message, TSubclassOf< UCommonGameDialog > DialogueWidget, int ZOrder = -1
+    );
+    
 	UFUNCTION(BlueprintCallable, BlueprintCosmetic, meta = (BlueprintInternalUseOnly = "true", WorldContext = "InWorldContextObject"))
 	static UAsyncAction_ShowConfirmation* ShowConfirmationOkCancel(
 		UObject* InWorldContextObject, FText Title, FText Message
@@ -64,7 +69,7 @@ public:
 
 private:
 	void HandleConfirmationResult(ECommonMessagingResult ConfirmationResult);
-	static UAsyncAction_ShowConfirmation* CreateAction(UObject* InWorldContext, UCommonGameDialogDescriptor* Descriptor, TSubclassOf<UCommonGameDialog> CustomDialogWidget = nullptr);
+	static UAsyncAction_ShowConfirmation* CreateAction(UObject* InWorldContext, UCommonGameDialogDescriptor* Descriptor, TSubclassOf<UCommonGameDialog> CustomDialogWidget = nullptr, TSubclassOf< UCommonGameDialog > DialogWidgetOnScreen = nullptr, int ZOrder = INDEX_NONE);
 
 	UPROPERTY(Transient)
 	TObjectPtr<UObject> WorldContextObject;
@@ -77,4 +82,13 @@ private:
 
 	UPROPERTY( Transient )
 	TSubclassOf< UCommonGameDialog > CustomDialogWidget;
+    
+    UPROPERTY( Transient )
+    TSubclassOf< UCommonGameDialog > DialogWidgetOnScreenClass;
+
+    UPROPERTY( Transient )
+    TObjectPtr< UCommonGameDialog > DialogWidgetOnScreen;
+    
+    UPROPERTY( Transient )
+    int ZOrder = INDEX_NONE;
 };
