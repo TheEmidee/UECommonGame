@@ -58,17 +58,19 @@ UCommonActivatableWidget* UCommonUIExtensions::PushContentToLayer_ForPlayer(cons
 	{
 		return nullptr;
 	}
-
-	if (UGameUIManagerSubsystem* UIManager = LocalPlayer->GetGameInstance()->GetSubsystem<UGameUIManagerSubsystem>())
-	{
-		if (UGameUIPolicy* Policy = UIManager->GetCurrentUIPolicy())
-		{
-			if (UPrimaryGameLayout* RootLayout = Policy->GetRootLayout(CastChecked<UCommonLocalPlayer>(LocalPlayer)))
-			{
-				return RootLayout->PushWidgetToLayerStack(LayerName, WidgetClass);
-			}
-		}
-	}
+    if (UGameInstance * GameInstance = LocalPlayer->GetGameInstance())
+    {
+        if (UGameUIManagerSubsystem * UIManager = GameInstance->GetSubsystem< UGameUIManagerSubsystem >() )
+	    {
+		    if (UGameUIPolicy* Policy = UIManager->GetCurrentUIPolicy())
+		    {
+			    if (UPrimaryGameLayout* RootLayout = Policy->GetRootLayout(CastChecked<UCommonLocalPlayer>(LocalPlayer)))
+			    {
+				    return RootLayout->PushWidgetToLayerStack(LayerName, WidgetClass);
+			    }
+		    }
+	    }
+    }
 
 	return nullptr;
 }
@@ -80,16 +82,19 @@ void UCommonUIExtensions::PushStreamedContentToLayer_ForPlayer(const ULocalPlaye
 		return;
 	}
 
-	if (UGameUIManagerSubsystem* UIManager = LocalPlayer->GetGameInstance()->GetSubsystem<UGameUIManagerSubsystem>())
-	{
-		if (UGameUIPolicy* Policy = UIManager->GetCurrentUIPolicy())
-		{
-			if (UPrimaryGameLayout* RootLayout = Policy->GetRootLayout(CastChecked<UCommonLocalPlayer>(LocalPlayer)))
-			{
-				const bool bSuspendInputUntilComplete = true;
-				RootLayout->PushWidgetToLayerStackAsync(LayerName, bSuspendInputUntilComplete, WidgetClass);
-			}
-		}
+	if ( UGameInstance * GameInstance = LocalPlayer->GetGameInstance() )
+    {
+        if ( UGameUIManagerSubsystem * UIManager = GameInstance->GetSubsystem< UGameUIManagerSubsystem >() )
+        {
+            if ( UGameUIPolicy * Policy = UIManager->GetCurrentUIPolicy() )
+            {
+                if ( UPrimaryGameLayout * RootLayout = Policy->GetRootLayout( CastChecked< UCommonLocalPlayer >( LocalPlayer ) ) )
+                {
+                    const bool bSuspendInputUntilComplete = true;
+                    RootLayout->PushWidgetToLayerStackAsync( LayerName, bSuspendInputUntilComplete, WidgetClass );
+                }
+            }
+        }
 	}
 }
 
@@ -103,16 +108,19 @@ void UCommonUIExtensions::PopContentFromLayer(UCommonActivatableWidget* Activata
 
 	if (const ULocalPlayer* LocalPlayer = ActivatableWidget->GetOwningLocalPlayer())
 	{
-		if (const UGameUIManagerSubsystem* UIManager = LocalPlayer->GetGameInstance()->GetSubsystem<UGameUIManagerSubsystem>())
-		{
-			if (const UGameUIPolicy* Policy = UIManager->GetCurrentUIPolicy())
-			{
-				if (UPrimaryGameLayout* RootLayout = Policy->GetRootLayout(CastChecked<UCommonLocalPlayer>(LocalPlayer)))
-				{
-					RootLayout->FindAndRemoveWidgetFromLayer(ActivatableWidget);
-				}
-			}
-		}
+        if ( const UGameInstance * GameInstance = LocalPlayer->GetGameInstance() )
+        {
+		    if ( const UGameUIManagerSubsystem * UIManager = GameInstance->GetSubsystem< UGameUIManagerSubsystem >() )
+		    {
+			    if (const UGameUIPolicy* Policy = UIManager->GetCurrentUIPolicy())
+			    {
+				    if (UPrimaryGameLayout* RootLayout = Policy->GetRootLayout(CastChecked<UCommonLocalPlayer>(LocalPlayer)))
+				    {
+					    RootLayout->FindAndRemoveWidgetFromLayer(ActivatableWidget);
+				    }
+			    }
+		    }
+        }
 	}
 }
 
@@ -176,18 +184,21 @@ void UCommonUIExtensions::ClearWidgetsFromLayer( ULocalPlayer * LocalPlayer, FGa
         return;
     }
 
-    if (UGameUIManagerSubsystem * UIManager = LocalPlayer->GetGameInstance()->GetSubsystem<UGameUIManagerSubsystem>())
-    {
-        if (const UGameUIPolicy * Policy = UIManager->GetCurrentUIPolicy())
+	if (UGameInstance * GameInstance = LocalPlayer->GetGameInstance())
+	{
+        if (UGameUIManagerSubsystem * UIManager = GameInstance->GetSubsystem<UGameUIManagerSubsystem>())
         {
-            if ( UPrimaryGameLayout * RootLayout = Policy->GetRootLayout(CastChecked<UCommonLocalPlayer>(LocalPlayer)))
+            if (const UGameUIPolicy * Policy = UIManager->GetCurrentUIPolicy())
             {
-				if (UCommonActivatableWidgetContainerBase * LayerWidget = RootLayout->GetLayerWidget( LayerName ))
-				{
-                    LayerWidget->ClearWidgets();
-				}
+                if ( UPrimaryGameLayout * RootLayout = Policy->GetRootLayout(CastChecked<UCommonLocalPlayer>(LocalPlayer)))
+                {
+				    if (UCommonActivatableWidgetContainerBase * LayerWidget = RootLayout->GetLayerWidget( LayerName ))
+				    {
+                        LayerWidget->ClearWidgets();
+				    }
+                }
             }
         }
-    }
+	}
 }
 
