@@ -9,6 +9,7 @@
 class FSubsystemCollectionBase;
 class UCommonGameDialogDescriptor;
 class UObject;
+class UCommonGameDialog;
 
 /** Possible results from a dialog */
 UENUM(BlueprintType)
